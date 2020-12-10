@@ -28,7 +28,8 @@ def BOW_FV(f_name, smoothing_factor):
     words_in_tweet = tweet[1].lower().split(' ')
     tweet_score_yes = math.log10(prior_yes)
     for word in words_in_tweet:
-      tweet_score_yes += math.log10(conditionals_yes[word])
+      if word in conditionals_yes:
+        tweet_score_yes += math.log10(conditionals_yes[word])
     tweet_scores_yes.append(tweet_score_yes)
 
   tweet_scores_no = []
@@ -36,7 +37,8 @@ def BOW_FV(f_name, smoothing_factor):
     words_in_tweet = tweet[1].lower().split(' ')
     tweet_score_no = math.log10(prior_no)
     for word in words_in_tweet:
-      tweet_score_no += math.log10(conditionals_no[word])
+      if word in conditionals_no:
+        tweet_score_no += math.log10(conditionals_no[word])
     tweet_scores_no.append(tweet_score_no)
 
   # Create list of tuples with the original training set tweet IDs and their predicted class

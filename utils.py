@@ -62,8 +62,10 @@ def getFV(fname):
   for word, freq in vocabulary.copy().items():
     if(freq == 1):
       vocabulary.pop(word)
+  
+  vocabulary_size = len(vocabulary)
 
-  return(vocabulary)
+  return(vocabulary, vocabulary_size)
 
 """
   Returns all words from the tweets labeled in the passed category
