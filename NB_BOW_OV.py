@@ -60,7 +60,90 @@ def BOW_OV(trainf_name, testf_name, smoothing_factor):
       else:
         outcome = 'wrong'
 
-      f.write(str(tweet[0]) + ' ' + "{:e}".format(tweet[1]) + ' ' + str(tweet[2]) + ' ' + str(all_test_tweets[i][2]) + ' ' + outcome)
+      f.write(str(tweet[0]) + '  ' + "{:e}".format(tweet[1]) + '  ' + str(tweet[2]) + '  ' + str(all_test_tweets[i][2]) + '  ' + outcome)
       f.write('\n')
-      
+  f.close()
+
+  acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = getMetrics(final_scores, all_test_tweets)
+
+  writeMetrics(acc, yes_p, yes_r, yes_f, no_p, no_r, no_f)
+
+def getMetrics(predictions, actual):
+
+  # Accuracy calculation
+  correct = 0
+  for i, tweet in enumerate(predictions):
+    if (tweet[2] == actual[i][2]):
+      correct += 1
+  
+  acc = correct / len(predictions)
+
+  # precision calculations
+  tp = 0
+  tp_and_fp = 0
+  for i, tweet in enumerate(predictions):
+    if(tweet[2] == 'yes' and tweet[2] != actual[i][2]):
+      tp_and_fp += 1
+    elif (tweet[2] == 'yes' and tweet[2] == actual[i][2]):
+      tp += 1
+      tp_and_fp += 1
+  
+  yes_p = (tp / tp_and_fp)
+
+  tp = 0
+  tp_and_fp = 0
+  for i, tweet in enumerate(predictions):
+    if(tweet[2] == 'no' and tweet[2] != actual[i][2]):
+      tp_and_fp += 1
+    elif (tweet[2] == 'no' and tweet[2] == actual[i][2]):
+      tp += 1
+      tp_and_fp += 1
+  
+  no_p = (tp / tp_and_fp)
+
+  # recall calculations
+  tp = 0
+  tp_and_fn = 0
+  for i, tweet in enumerate(predictions):
+    if(actual[i][2] == 'yes' and tweet[2] != actual[i][2]):
+      tp_and_fn += 1
+    elif(actual[i][2] == 'yes' and tweet[2] == actual[i][2]):
+      tp += 1
+      tp_and_fn += 1
+  
+  yes_r = (tp / tp_and_fn)
+
+  tp = 0
+  tp_and_fn = 0
+  for i, tweet in enumerate(predictions):
+    if(actual[i][2] == 'no' and tweet[2] != actual[i][2]):
+      tp_and_fn += 1
+    elif(actual[i][2] == 'no' and tweet[2] == actual[i][2]):
+      tp += 1
+      tp_and_fn += 1
+  
+  no_r = (tp / tp_and_fn)
+
+  # f1-measure calculations
+
+  yes_f = (2*yes_p*yes_r)/(yes_p + yes_r)
+  no_f = (2*no_p*no_r)/(no_p + no_r)
+
+  # Rounding results to 4 decimals and converting to strings
+  acc = '{:0.4f}'.format(acc)
+  yes_p = '{:0.4f}'.format(yes_p)
+  yes_r = '{:0.4f}'.format(yes_r)
+  yes_f = '{:0.4f}'.format(yes_f)
+  no_p = '{:0.4f}'.format(no_p)
+  no_r = '{:0.4f}'.format(no_r)
+  no_f = '{:0.4f}'.format(no_f)
+
+  return (acc, yes_p, yes_r, yes_f, no_p, no_r, no_f)
+
+def writeMetrics(acc, yes_p, yes_r, yes_f, no_p, no_r, no_f):
+  with open('eval_NB-BOW-OV.txt', 'w') as f:
+    f.write(acc + '\n')
+    f.write(yes_p + '  ' + no_p + '\n')
+    f.write(yes_r + '  ' + no_r + '\n')
+    f.write(yes_f + '  ' + no_f)
   f.close()
