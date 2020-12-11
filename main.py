@@ -1,5 +1,5 @@
-from NB_BOW_OV import BOW_OV
-from NB_BOW_FV import BOW_FV
+from NB_BOW_OV import NBC_OV
+from NB_BOW_FV import NBC_FV
 import argparse
 
 # Sets up the arguments that can be passed in the terminal
@@ -10,16 +10,20 @@ parser.add_argument('-s', '--smoothing', type=float, default=0.01, metavar='', h
 parser.add_argument('-v', '--nbversion', type=str, metavar='', help="Version of NB Classifier to run. Options: OV or FV (default: runs both versions)")
 args = parser.parse_args()
 
-trainf_name = "covid_training.tsv"
-testf_name = "covid_test_public.tsv"
+# Initializes both NBC Models
+OV_Model = NBC_OV(args.trainfilename, args.testfilename, args.smoothing)
+FV_Model = NBC_FV(args.trainfilename, args.testfilename, args.smoothing)
 
+# Runs models based on command line arguments
 if(args.nbversion == 'OV'):
-    print("Running BOW_OV...")
-    BOW_OV(args.trainfilename, args.testfilename, args.smoothing)
+  print("Running only NBC_OV...")
+  OV_Model.run()
+
 elif(args.nbversion == 'FV'):
-    print("Running BOW_FV...")
-    BOW_FV(args.trainfilename, args.testfilename, args.smoothing)
+  print("Running only NBC_FV...")
+  FV_Model.run()
+
 else:
-    print("Running BOW_OV and BOW_FV...")
-    BOW_OV(args.trainfilename, args.testfilename, args.smoothing)
-    BOW_FV(args.trainfilename, args.testfilename, args.smoothing)
+  print("Running NBC_OV and NBC_FV...")
+  OV_Model.run()
+  FV_Model.run()

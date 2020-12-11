@@ -33,7 +33,7 @@ def get_tweets(fname):
   return(tweets)
 
 """
-  Takes tsv file and computes the vocabulary of all its tweet contents
+  Takes tsv file, computes and returns the unfiltered vocabulary of all its tweet contents.
 """
 def getOV(fname):
   words = []
@@ -53,8 +53,8 @@ def getOV(fname):
   return(vocabulary, vocabulary_size)
 
 """
-  Takes tsv file and computes the filtered vocabulary of all its tweet contents
-  The words which only appear once are not included.
+  Takes tsv file, computes and returns the filtered vocabulary of all its tweet contents.
+  The words which only appear once are filtered out of the vocabulary.
 """
 def getFV(fname):
   words = []
@@ -80,7 +80,7 @@ def getFV(fname):
   return(vocabulary, vocabulary_size)
 
 """
-  Returns all words from the tweets labeled in the passed category
+  Returns all words from the tweets labeled in the passed category (yes or no)
 """
 def getWords(category):
   words_in_category = []
@@ -93,3 +93,6 @@ def getWords(category):
   nb_words_in_category = len(words_in_category)
 
   return (words_in_category, nb_words_in_category)
+
+if __name__ == "__main__":
+  print("\nThis file contains util functions used throughout the project.")
