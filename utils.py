@@ -4,7 +4,6 @@ import csv
   Splits tweets into lists based on class they belong to
 """
 def split_into_classes(fname):
-  all_tweets = []
   all_yesses = []
   all_nos = []
 
@@ -12,13 +11,26 @@ def split_into_classes(fname):
     file = csv.reader(f, delimiter='\t')
     next(file)  # skip first line
     for line in file:
-      all_tweets.append((line[0],line[1],line[2]))
       if(line[2] == 'yes'):
         all_yesses.append((line[0],line[1],line[2]))
       else:
         all_nos.append((line[0],line[1],line[2]))
 
-  return(all_tweets, all_yesses, all_nos)
+  return(all_yesses, all_nos)
+
+"""
+  Get all tweets (id, content, class) from given tsv file
+"""
+def get_tweets(fname):
+  tweets = []
+
+  with open(fname, "r") as f:
+    file = csv.reader(f, delimiter='\t')
+    next(file)  # skip first line
+    for line in file:
+      tweets.append((line[0],line[1],line[2]))
+
+  return(tweets)
 
 """
   Takes tsv file and computes the vocabulary of all its tweet contents

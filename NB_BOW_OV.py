@@ -1,16 +1,19 @@
-from utils import getOV, split_into_classes, getWords
+from utils import getOV, split_into_classes, getWords, get_tweets
 import math
 
-def BOW_OV(f_name, smoothing_factor):
+def BOW_OV(trainf_name, testf_name, smoothing_factor):
   # Capture the vocabulary of the tweets file provided
-  vocab, length_vocab = getOV(f_name)
+  vocab, length_vocab = getOV(trainf_name)
 
   # Separate the tweets from the training set into all classes
-  all_tweets, tweets_labeled_yes, tweets_labeled_no = split_into_classes(f_name)
+  tweets_labeled_yes, tweets_labeled_no = split_into_classes(trainf_name)
+
+  all_train_tweets = get_tweets(trainf_name)
+  all_test_tweets = get_tweets(testf_name)
 
   # Calculate priors
-  prior_yes = len(tweets_labeled_yes) / len(all_tweets)
-  prior_no = len(tweets_labeled_no) / len(all_tweets)
+  prior_yes = len(tweets_labeled_yes) / len(all_train_tweets)
+  prior_no = len(tweets_labeled_no) / len(all_train_tweets)
 
   # Calculate conditionals
   words_in_yes, nb_words_in_yes = getWords(tweets_labeled_yes)
@@ -24,39 +27,40 @@ def BOW_OV(f_name, smoothing_factor):
 
   # Go through entire training set tweets and classify them based on predicted class
   tweet_scores_yes = []
-  for tweet in all_tweets:
+  for tweet in all_test_tweets:
     words_in_tweet = tweet[1].lower().split(' ')
     tweet_score_yes = math.log10(prior_yes)
     for word in words_in_tweet:
-      tweet_score_yes += math.log10(conditionals_yes[word])
+      if word in conditionals_yes:
+        tweet_score_yes += math.log10(conditionals_yes[word])
     tweet_scores_yes.append(tweet_score_yes)
 
   tweet_scores_no = []
-  for tweet in all_tweets:
+  for tweet in all_test_tweets:
     words_in_tweet = tweet[1].lower().split(' ')
     tweet_score_no = math.log10(prior_no)
     for word in words_in_tweet:
-      tweet_score_no += math.log10(conditionals_no[word])
+      if word in conditionals_no:
+        tweet_score_no += math.log10(conditionals_no[word])
     tweet_scores_no.append(tweet_score_no)
 
   # Create list of tuples with the original training set tweet IDs and their predicted class
   final_scores = []
-  for i, tweet in enumerate(all_tweets):
+  for i, tweet in enumerate(all_test_tweets):
     if(tweet_scores_yes[i] > tweet_scores_no[i]):
-      final_scores.append((tweet[0], 'yes'))
+      final_scores.append((tweet[0], tweet_scores_yes[i], 'yes'))
     else:
-      final_scores.append((tweet[0], 'no'))
+      final_scores.append((tweet[0], tweet_scores_no[i], 'no'))
   
   # Export the tweet ids with their predicted class
-  with open('predicted.txt', 'w') as f:
-    for i in final_scores:
-      f.write(str(i))
-      f.write('\n')
+  with open('trace_NB-BOW-OV.txt', 'w') as f:
+    for i, tweet in enumerate(final_scores):
+      if (tweet[2] == all_test_tweets[i][2]):
+        outcome = 'correct'
+      else:
+        outcome = 'wrong'
 
-  # Export the tweet ids with their actual class
-  with open('actual.txt', 'w') as f:
-    for i in all_tweets:
-      f.write(str((i[0], i[2])))
+      f.write(str(tweet[0]) + ' ' + "{:e}".format(tweet[1]) + ' ' + str(tweet[2]) + ' ' + str(all_test_tweets[i][2]) + ' ' + outcome)
       f.write('\n')
       
   f.close()

@@ -1,5 +1,9 @@
 from NB_BOW_OV import BOW_OV
 from NB_BOW_FV import BOW_FV
+from utils import get_tweets
 
-# BOW_OV("covid_training.tsv", 0.01)
-BOW_FV("covid_training.tsv", 0.01)
+trainf_name = "covid_training.tsv"
+testf_name = "covid_test_public.tsv"
+
+BOW_OV(trainf_name, testf_name, 0.01)
+BOW_FV(trainf_name, testf_name, 0.01)
