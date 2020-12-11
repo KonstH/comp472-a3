@@ -62,7 +62,8 @@ def BOW_FV(trainf_name, testf_name, smoothing_factor):
 
       f.write(str(tweet[0]) + '  ' + "{:e}".format(tweet[1]) + '  ' + str(tweet[2]) + '  ' + str(all_test_tweets[i][2]) + '  ' + outcome)
       f.write('\n')
-  f.close()
+    f.close()
+    print('NB BOW FV trace exported to file trace_NB-BOW-FV.txt')
 
   acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = getMetrics(final_scores, all_test_tweets)
 
@@ -147,4 +148,5 @@ def writeMetrics(acc, yes_p, yes_r, yes_f, no_p, no_r, no_f):
     f.write(yes_r + '  ' + no_r + '\n')
     f.write(yes_f + '  ' + no_f)
   f.close()
+  print('NB BOW FV metrics exported to file eval_NB-BOW-FV.txt')
     
