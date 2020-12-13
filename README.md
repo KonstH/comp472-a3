@@ -4,7 +4,7 @@ How to run program
 ---
 
 ### Step 1 - Setup
-Include the training and test tsv files you want to use directly into the repository's root directory
+Include the training and test `tsv` files you want to use directly into the project folder
 
 Python modules used/required for this project:
 - `csv`
