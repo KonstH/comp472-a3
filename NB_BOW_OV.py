@@ -131,7 +131,6 @@ class NBC_OV:
 
   # Exports the Model's trace into file
   def exportTrace(self, predictions):
-    # Export the tweet ids with their predicted class
     with open('trace_NB-BOW-OV.txt', 'w') as f:
       for i, tweet in enumerate(predictions):
         if (tweet[2] == self.test_tweets[i][2]):
@@ -141,17 +140,20 @@ class NBC_OV:
 
         f.write(str(tweet[0]) + '  ' + str(tweet[2]) + '  ' + format(tweet[1], ".2E") + '  ' + str(self.test_tweets[i][2]) + '  ' + outcome)
         f.write('\n')
-      f.close()
-      print('NB BOW OV trace exported to file: \"trace_NB-BOW-OV.txt\"')
+
+    f.close()
+    print('NB BOW OV trace exported to file: \"trace_NB-BOW-OV.txt\"')
   
   # Exports the Model's performance metrics into file
   def exportMetrics(self, predictions, actual):
     acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = self.getMetrics(predictions, actual)
+    
     with open('eval_NB-BOW-OV.txt', 'w') as f:
       f.write(acc + '\n')
       f.write(yes_p + '  ' + no_p + '\n')
       f.write(yes_r + '  ' + no_r + '\n')
       f.write(yes_f + '  ' + no_f)
+    
     f.close()
     print('NB BOW OV metrics exported to file: \"eval_NB-BOW-OV.txt\"')
   
