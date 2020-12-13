@@ -29,8 +29,10 @@ class NBC_FV:
 
     return(conditionals_yes, conditionals_no)
 
-  # Returns the scores for all tweets in the test set
-  def getScores(self, prior_yes, prior_no, cond_yes, cond_no):
+  # Returns the predictions for all tweets in the test set
+  def getPredictions(self, prior_yes, prior_no, cond_yes, cond_no):
+
+    # Computes the scores of all test tweets given class "yes"
     tweet_scores_yes = []
     for tweet in self.test_tweets:
       words_in_tweet = tweet[1].lower().split(' ')
@@ -40,6 +42,7 @@ class NBC_FV:
           tweet_score_yes += math.log10(cond_yes[word])
       tweet_scores_yes.append(tweet_score_yes)
 
+    # Computes the scores of all test tweets given class "no"
     tweet_scores_no = []
     for tweet in self.test_tweets:
       words_in_tweet = tweet[1].lower().split(' ')
@@ -49,29 +52,30 @@ class NBC_FV:
           tweet_score_no += math.log10(cond_no[word])
       tweet_scores_no.append(tweet_score_no)
 
-    # Create list of tuples with the original training set tweet IDs and their predicted class
-    final_scores = []
+    # Create list of tuples containing the test tweet IDs, their final score and their predicted class
+    predictions = []
     for i, tweet in enumerate(self.test_tweets):
       if(tweet_scores_yes[i] > tweet_scores_no[i]):
-        final_scores.append((tweet[0], tweet_scores_yes[i], 'yes'))
+        predictions.append((tweet[0], tweet_scores_yes[i], 'yes'))
       else:
-        final_scores.append((tweet[0], tweet_scores_no[i], 'no'))
+        predictions.append((tweet[0], tweet_scores_no[i], 'no'))
 
-    return(final_scores)
+    return(predictions)
   
   # Returns the accuracy and per-class precision, recall and f1-measure
-  def getMetrics(self, scores, actual):
+  def getMetrics(self, predictions, actual):
+
     # Accuracy calculation
     correct = 0
-    for i, tweet in enumerate(scores):
+    for i, tweet in enumerate(predictions):
       if (tweet[2] == actual[i][2]):
         correct += 1
-    acc = correct / len(scores)
+    acc = correct / len(predictions)
 
     # Precision calculations
     tp = 0
     tp_and_fp = 0
-    for i, tweet in enumerate(scores):
+    for i, tweet in enumerate(predictions):
       if(tweet[2] == 'yes' and tweet[2] != actual[i][2]):
         tp_and_fp += 1
       elif (tweet[2] == 'yes' and tweet[2] == actual[i][2]):
@@ -81,7 +85,7 @@ class NBC_FV:
 
     tp = 0
     tp_and_fp = 0
-    for i, tweet in enumerate(scores):
+    for i, tweet in enumerate(predictions):
       if(tweet[2] == 'no' and tweet[2] != actual[i][2]):
         tp_and_fp += 1
       elif (tweet[2] == 'no' and tweet[2] == actual[i][2]):
@@ -92,7 +96,7 @@ class NBC_FV:
     # Recall calculations
     tp = 0
     tp_and_fn = 0
-    for i, tweet in enumerate(scores):
+    for i, tweet in enumerate(predictions):
       if(actual[i][2] == 'yes' and tweet[2] != actual[i][2]):
         tp_and_fn += 1
       elif(actual[i][2] == 'yes' and tweet[2] == actual[i][2]):
@@ -102,7 +106,7 @@ class NBC_FV:
 
     tp = 0
     tp_and_fn = 0
-    for i, tweet in enumerate(scores):
+    for i, tweet in enumerate(predictions):
       if(actual[i][2] == 'no' and tweet[2] != actual[i][2]):
         tp_and_fn += 1
       elif(actual[i][2] == 'no' and tweet[2] == actual[i][2]):
@@ -126,10 +130,10 @@ class NBC_FV:
     return (acc, yes_p, yes_r, yes_f, no_p, no_r, no_f)
 
   # Exports the Model's trace into file
-  def exportTrace(self, scores):
+  def exportTrace(self, predictions):
     # Export the tweet ids with their predicted class
     with open('trace_NB-BOW-FV.txt', 'w') as f:
-      for i, tweet in enumerate(scores):
+      for i, tweet in enumerate(predictions):
         if (tweet[2] == self.test_tweets[i][2]):
           outcome = 'correct'
         else:
@@ -138,26 +142,26 @@ class NBC_FV:
         f.write(str(tweet[0]) + '  ' + str(tweet[2]) + '  ' + format(tweet[1], ".2E") + '  ' + str(self.test_tweets[i][2]) + '  ' + outcome)
         f.write('\n')
       f.close()
-      print('NB BOW FV trace exported to file trace_NB-BOW-FV.txt')
+      print('NB BOW FV trace exported to file: \"trace_NB-BOW-FV.txt\"')
   
   # Exports the Model's performance metrics into file
-  def exportMetrics(self, scores, actual):
-    acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = self.getMetrics(scores, actual)
+  def exportMetrics(self, predictions, actual):
+    acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = self.getMetrics(predictions, actual)
     with open('eval_NB-BOW-FV.txt', 'w') as f:
       f.write(acc + '\n')
       f.write(yes_p + '  ' + no_p + '\n')
       f.write(yes_r + '  ' + no_r + '\n')
       f.write(yes_f + '  ' + no_f)
     f.close()
-    print('NB BOW FV metrics exported to file eval_NB-BOW-FV.txt')
+    print('NB BOW FV metrics exported to file: \"eval_NB-BOW-FV.txt\"')
   
   # Runs the Model and exports results into files
   def run(self):
     prior_yes, prior_no = self.getPriors()
     cond_yes, cond_no = self.getConditionals()
-    scores = self.getScores(prior_yes, prior_no, cond_yes, cond_no)
-    self.exportTrace(scores)
-    self.exportMetrics(scores, self.test_tweets)
+    predictions = self.getPredictions(prior_yes, prior_no, cond_yes, cond_no)
+    self.exportTrace(predictions)
+    self.exportMetrics(predictions, self.test_tweets)
 
 if __name__ == "__main__":
   print("\nThis is the NB_BOW_FV class. It defines a Naive Bayes Classifier using a filtered vocabulary.")
