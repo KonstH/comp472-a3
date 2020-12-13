@@ -9,12 +9,14 @@ class NBC_FV:
     self.test_tweets = get_tweets(testf_name)
     self.smoothing_factor = smoothing_factor
 
+  # Returns the prior for each class
   def getPriors(self):
     prior_yes = len(self.tweets_labeled_yes) / len(self.train_tweets)
     prior_no = len(self.tweets_labeled_no) / len(self.train_tweets)
 
     return(prior_yes, prior_no)
   
+  # Returns the conditionals for all the words in the vocabulary
   def getConditionals(self):
     words_in_yes, nb_words_in_yes = getWords(self.tweets_labeled_yes)
     words_in_no, nb_words_in_no = getWords(self.tweets_labeled_no)
@@ -27,6 +29,7 @@ class NBC_FV:
 
     return(conditionals_yes, conditionals_no)
 
+  # Returns the scores for all tweets in the test set
   def getScores(self, prior_yes, prior_no, cond_yes, cond_no):
     tweet_scores_yes = []
     for tweet in self.test_tweets:
@@ -56,6 +59,7 @@ class NBC_FV:
 
     return(final_scores)
   
+  # Returns the accuracy and per-class precision, recall and f1-measure
   def getMetrics(self, scores, actual):
     # Accuracy calculation
     correct = 0
@@ -121,6 +125,7 @@ class NBC_FV:
 
     return (acc, yes_p, yes_r, yes_f, no_p, no_r, no_f)
 
+  # Exports the Model's trace into file
   def exportTrace(self, scores):
     # Export the tweet ids with their predicted class
     with open('trace_NB-BOW-FV.txt', 'w') as f:
@@ -130,11 +135,12 @@ class NBC_FV:
         else:
           outcome = 'wrong'
 
-        f.write(str(tweet[0]) + '  ' + "{:e}".format(tweet[1]) + '  ' + str(tweet[2]) + '  ' + str(self.test_tweets[i][2]) + '  ' + outcome)
+        f.write(str(tweet[0]) + '  ' + str(tweet[2]) + '  ' + format(tweet[1], ".2E") + '  ' + str(self.test_tweets[i][2]) + '  ' + outcome)
         f.write('\n')
       f.close()
       print('NB BOW FV trace exported to file trace_NB-BOW-FV.txt')
   
+  # Exports the Model's performance metrics into file
   def exportMetrics(self, scores, actual):
     acc, yes_p, yes_r, yes_f, no_p, no_r, no_f = self.getMetrics(scores, actual)
     with open('eval_NB-BOW-FV.txt', 'w') as f:
@@ -145,6 +151,7 @@ class NBC_FV:
     f.close()
     print('NB BOW FV metrics exported to file eval_NB-BOW-FV.txt')
   
+  # Runs the Model and exports results into files
   def run(self):
     prior_yes, prior_no = self.getPriors()
     cond_yes, cond_no = self.getConditionals()

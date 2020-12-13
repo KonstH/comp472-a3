@@ -1,7 +1,7 @@
 import csv
 
 """
-  Splits tweets into lists based on class they belong to
+  Splits tweets into lists based on the class they belong to
 """
 def split_into_classes(fname):
   all_yesses = []
@@ -19,7 +19,7 @@ def split_into_classes(fname):
   return(all_yesses, all_nos)
 
 """
-  Get all tweets (id, content, class) from given tsv file
+  Returns all tweets (id, content, class) from the given tsv file
 """
 def get_tweets(fname):
   tweets = []
@@ -33,7 +33,7 @@ def get_tweets(fname):
   return(tweets)
 
 """
-  Takes tsv file, computes and returns the unfiltered vocabulary of all its tweet contents.
+  Takes tsv file, computes and returns the unfiltered vocabulary, along with its length, based on the content of its tweets.
 """
 def getOV(fname):
   words = []
@@ -45,7 +45,6 @@ def getOV(fname):
       words_in_line = line[1].lower().split(' ')
       for word in words_in_line:
         words.append(word)
-        #words.append(word.replace('.', '').replace(',', '').replace(':', '').replace('!', '').replace('?', '').replace(';', ''))
 
   vocabulary = { i:words.count(i) for i in set(words) }
   vocabulary_size = len(vocabulary)
@@ -53,7 +52,7 @@ def getOV(fname):
   return(vocabulary, vocabulary_size)
 
 """
-  Takes tsv file, computes and returns the filtered vocabulary of all its tweet contents.
+  Takes tsv file, computes and returns the filtered vocabulary, along with its length, based on the content of its tweets.
   The words which only appear once are filtered out of the vocabulary.
 """
 def getFV(fname):
@@ -66,7 +65,6 @@ def getFV(fname):
       words_in_line = line[1].lower().split(' ')
       for word in words_in_line:
         words.append(word)
-        #words.append(word.replace('.', '').replace(',', '').replace(':', '').replace('!', '').replace('?', '').replace(';', ''))
 
   vocabulary = { word:words.count(word) for word in set(words) }
 
@@ -80,7 +78,7 @@ def getFV(fname):
   return(vocabulary, vocabulary_size)
 
 """
-  Returns all words from the tweets labeled in the passed category (yes or no)
+  Returns all words from the tweets belonging to the given category (yes / no), along with their # of occurences
 """
 def getWords(category):
   words_in_category = []
