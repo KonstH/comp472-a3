@@ -81,7 +81,10 @@ class NBC_FV:
       elif (tweet[2] == 'yes' and tweet[2] == actual[i][2]):
         tp += 1
         tp_and_fp += 1
-    yes_p = (tp / tp_and_fp)
+    if(tp_and_fp == 0):
+      yes_p = 0
+    else:
+      yes_p = (tp / tp_and_fp)
 
     tp = 0
     tp_and_fp = 0
@@ -91,7 +94,10 @@ class NBC_FV:
       elif (tweet[2] == 'no' and tweet[2] == actual[i][2]):
         tp += 1
         tp_and_fp += 1
-    no_p = (tp / tp_and_fp)
+    if(tp_and_fp == 0):
+      no_p = 0
+    else:
+      no_p = (tp / tp_and_fp)
 
     # Recall calculations
     tp = 0
@@ -102,7 +108,10 @@ class NBC_FV:
       elif(actual[i][2] == 'yes' and tweet[2] == actual[i][2]):
         tp += 1
         tp_and_fn += 1
-    yes_r = (tp / tp_and_fn)
+    if(tp_and_fn == 0):
+      yes_r = 0
+    else:
+      yes_r = (tp / tp_and_fn)    
 
     tp = 0
     tp_and_fn = 0
@@ -112,11 +121,21 @@ class NBC_FV:
       elif(actual[i][2] == 'no' and tweet[2] == actual[i][2]):
         tp += 1
         tp_and_fn += 1
-    no_r = (tp / tp_and_fn)
+    if(tp_and_fn == 0):
+      no_r = 0
+    else:
+      no_r = (tp / tp_and_fn)    
 
     # F1-measure calculations
-    yes_f = (2*yes_p*yes_r)/(yes_p + yes_r)
-    no_f = (2*no_p*no_r)/(no_p + no_r)
+    if(yes_p == 0 or yes_r == 0):
+      yes_f = 0
+    else:
+      yes_f = (2*yes_p*yes_r)/(yes_p + yes_r)
+
+    if(no_p == 0 or no_r == 0):
+      no_f = 0
+    else:
+      no_f = (2*no_p*no_r)/(no_p + no_r)
 
     # Rounding results to 4 decimals and converting to strings
     acc = '{:0.4f}'.format(acc)
